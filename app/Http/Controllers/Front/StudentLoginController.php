@@ -43,116 +43,79 @@ class StudentLoginController extends Controller
     
 
     public function studentlogin(Request $request)
+{
+    $request->validate([
+        'loginId'  => 'required|string',
+        'password' => 'required|string',
+    ]);
 
-    {
+    // Extra conditions to ensure only active students can log in
+    $mustBe = [
+        'isDelete'   => 0,
+        'isWaiting'  => 0,
+        'isRegister' => 1,
+        'isPaid'     => 1,
+        'iStatus'    => 1,
+    ];
 
+    // Attempt auth with constraints (works with EloquentUserProvider)
+    $ok = Auth::guard('student')->attempt([
+        'login_id' => $request->loginId,
+        'password' => $request->password,
+    ] + $mustBe, $remember = false);
 
-
-                $request->validate([
-
-            'loginId' => 'required|string',
-
-            'password' => 'required|string',
-
-        ]);
-
-
-
-        // Retrieve credentials
-
-        $credentials = [
-
-            'login_id' => $request->loginId,
-
-            'password' => $request->password,
-
-        ];
-
-
-
-        // Check if the user exists
-
-        $user = Student::where('login_id', $request->loginId)->first();
-
-
-
-        if ($user) 
-
-        {
-
-            // Attempt authentication
-
-            if (Auth::guard('student')->attempt($credentials)) 
-
-            {
-
-
-
-                $user=Student::select('student_first_name','student_last_name','student_id','email','mobile')->where(['student_id'=>$user->student_id,'isWaiting'=>0,'isRegister'=>1,'isPaid'=>1,'iStatus'=>1])->first();
-                if(!empty($user))
-
-                {
-                    $studentname=$user->student_first_name.''.$user->student_last_name;
-
-                    $request->session()->put('student_id', $user->student_id);
-
-                    $request->session()->put('student_name',$studentname);
-
-                    $request->session()->put('email',$user->email);
-
-                    $request->session()->put('mobile',$user->mobile);
-
-                    $request->session()->put('student_role_id','2');
-
-                }else 
-
-                {
-
-                    
-
-                    return redirect()->back()->with('error', 'Student Not Found');
-
-                }
-
-                
-
-                return redirect()->route('student_profile');
-
-                
-
-            } else 
-
-            {
-
-                
-
-                return redirect()
-
-                    ->back()
-
-                    ->with('error', 'Invalid password');
-
-            }
-
-        } else {
-
-
-
-            return redirect()
-
-                ->back()
-
-                ->with('error', 'No Student account found with this login ID.');
-
+    if (!$ok) {
+        // Work out *why* (helpful message)
+        $u = \App\Models\Student::where('login_id', $request->loginId)->first();
+        if (!$u) {
+            return back()->with('error', 'No Student account found with this login ID.');
         }
-
+        if ((int)$u->isDelete === 1) {
+            return back()->with('error', 'Your account has been deactivated. Please contact support.');
+        }
+        if ($u->isWaiting || !$u->isRegister || !$u->isPaid || !$u->iStatus) {
+            return back()->with('error', 'Your account is not active yet. Please complete registration/payment or contact support.');
+        }
+        return back()->with('error', 'Invalid password');
     }
+
+    // Authenticated here
+    $request->session()->regenerate(); // session fixation protection
+
+    $user = Auth::guard('student')->user();
+
+    // Store your custom session keys
+    $studentname = trim(($user->student_first_name ?? '') . ' ' . ($user->student_last_name ?? ''));
+    $request->session()->put('student_id', $user->student_id);
+    $request->session()->put('student_name', $studentname);
+    $request->session()->put('email', $user->email);
+    $request->session()->put('mobile', $user->mobile);
+    $request->session()->put('student_role_id', '2');
+
+    /**
+     * OPTIONAL: kick other active sessions for this student (so only this login remains).
+     * Requires SESSION_DRIVER=database and a `sessions` table having a `user_id` column
+     * (Laravel’s default when using database sessions).
+     */
+    if (config('session.driver') === 'database') {
+        $currentId = $request->session()->getId();
+        DB::table('sessions')
+            ->where('user_id', $user->student_id)      // adjust if your column differs
+            ->where('id', '!=', $currentId)
+            ->delete();
+    }
+
+    return redirect()->route('student_profile');
+}
+
 
 
 
     public function studentlogout(Request $request)
 
     {
+
+        Auth::guard('student')->logout();
 
         Auth::logout();
 

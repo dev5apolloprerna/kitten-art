@@ -204,7 +204,7 @@ class FrontController extends Controller
 
                     $msg = array(
                             'FromMail' => $SendEmailDetails->strFromMail,
-                            'Title' => 'Kitten Art Classes ,LLC',
+                            'Title' => 'Kitten Art Classes',
                             'ToEmail' => $request->email,
                             //'ToEmail' => 'dev4.apolloinfotech@gmail.com',
                             'Subject' => 'Thank You For Your Inquiry'
@@ -228,7 +228,7 @@ class FrontController extends Controller
 
                         $adminmsg = array(
                             'FromMail' => $SendEmailDetails->strFromMail,
-                            'Title' => 'Kitten Art Classes ,LLC',
+                            'Title' => 'Kitten Art Classes',
                              'ToEmail' => $setting->email,
                              //'ToEmail' => 'dev4.apolloinfotech@gmail.com',
                             'Subject' => 'Student Inquiry.'
@@ -408,7 +408,7 @@ class FrontController extends Controller
 
                 $msg = array(
                     'FromMail' => $SendEmailDetails->strFromMail,
-                    'Title' => 'Kitten Art Classes ,LLC',
+                    'Title' => 'Kitten Art Classes',
                     'ToEmail' => $request->email,
                     'Subject' => 'Thank You For Your Trial Class Registration'
                 );
@@ -432,7 +432,7 @@ class FrontController extends Controller
 
                 $adminmsg = array(
                     'FromMail' => $SendEmailDetails->strFromMail,
-                    'Title' => 'Kitten Art Classes ,LLC',
+                    'Title' => 'Kitten Art Classes',
                     'ToEmail' => $setting->email,
                     'Subject' => 'New Student Registration For Free Trial Class'
                 );
@@ -564,7 +564,7 @@ class FrontController extends Controller
                 $msg = array(
                     //'FromMail' => $request->email,
                     'FromMail' => 'no-reply@kittenart.com',
-                    'Title' => 'Kitten Art Classes ,LLC',
+                    'Title' => 'Kitten Art Classes',
                     'ToEmail' => $setting->email,
                     'Subject' => 'Event Registration'
                 );
@@ -638,7 +638,7 @@ class FrontController extends Controller
                 $msg = array(
                    // 'FromMail' => $request->email,
                     'FromMail' => 'no-reply@kittenart.com',
-                    'Title' => 'Kitten Art Classes ,LLC',
+                    'Title' => 'Kitten Art Classes',
                     'ToEmail' => $setting->email,
                     'Subject' => $service->service_name.' Registration'
                 );
@@ -665,7 +665,7 @@ class FrontController extends Controller
                 $msg = array(
                    // 'FromMail' => $request->email,
                     'FromMail' => 'no-reply@kittenart.com',
-                    'Title' => 'Kitten Art Classes ,LLC',
+                    'Title' => 'Kitten Art Classes',
                     'ToEmail' => $setting->email,
                     'Subject' => 'Paint Party Registration'
                 );

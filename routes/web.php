@@ -308,16 +308,18 @@ Route::get('/student-login', [FrontController::class, 'login'])->name('FrontLogi
 Route::post('/studentlogin', [StudentLoginController::class, 'studentlogin'])->name('FrontStudentLogin');
 Route::get('/student-logout', [StudentLoginController::class, 'studentlogout'])->name('FrontStudentLogout');
 
-Route::get('/student-dashboard', [FrontStudentController::class, 'student_dashboard'])->name('student_dashboard');
-Route::get('/student-active-plan', [FrontStudentController::class, 'student_active_plan'])->name('student_active_plan');
-Route::post('/student-submit-renew-plan', [FrontStudentController::class, 'student_submit_renew_plan'])->name('student_submit_renew_plan');
-Route::any('/student-renew-plan', [FrontStudentController::class, 'student_renew_plan'])->name('student_renew_plan');
-Route::get('/renew-subscription/{id?}', [FrontStudentController::class, 'renew_subscription'])->name('renew-subscription');
-Route::get('/student-profile', [FrontStudentController::class, 'student_profile'])->name('student_profile');
-Route::post('/student-update', [FrontStudentController::class, 'student_update'])->name('student_update');
 
-Route::get('/student_testimonial', [FrontStudentController::class, 'student_testimonial'])->name('student_testimonial');
-Route::post('/store-feedback', [FrontStudentController::class, 'storeFeedback'])->name('storeFeedback');
+Route::middleware(['auth:student', 'student.active'])->group(function () {
+    Route::get('/student-dashboard', [FrontStudentController::class, 'student_dashboard'])->name('student_dashboard');
+    Route::get('/student-active-plan', [FrontStudentController::class, 'student_active_plan'])->name('student_active_plan');
+    Route::post('/student-submit-renew-plan', [FrontStudentController::class, 'student_submit_renew_plan'])->name('student_submit_renew_plan');
+    Route::any('/student-renew-plan', [FrontStudentController::class, 'student_renew_plan'])->name('student_renew_plan');
+    Route::get('/renew-subscription/{id?}', [FrontStudentController::class, 'renew_subscription'])->name('renew-subscription');
+    Route::get('/student-profile', [FrontStudentController::class, 'student_profile'])->name('student_profile');
+    Route::post('/student-update', [FrontStudentController::class, 'student_update'])->name('student_update');
+    Route::get('/student_testimonial', [FrontStudentController::class, 'student_testimonial'])->name('student_testimonial');
+    Route::post('/store-feedback', [FrontStudentController::class, 'storeFeedback'])->name('storeFeedback');
+});
 
 //Forgot-Password Page
 Route::get('Forgot-Password', [StudentLoginController::class, 'forgotpassword'])->name('forgotpassword');
