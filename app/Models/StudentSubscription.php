@@ -32,7 +32,7 @@ class StudentSubscription extends Model
 
 
 
-    protected $fillable = ['subscription_id', 'student_id', 'plan_id', 'total_session', 'amount', 'activate_date', 'expired_date', 'expired_date', 'created_at'];
+    protected $fillable = ['subscription_id', 'student_id', 'plan_id', 'total_session', 'amount', 'activate_date', 'expired_date', 'expired_date', 'payment_mode','payment_date','created_at'];
 
 }
 

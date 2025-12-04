@@ -82,6 +82,8 @@ class StudentSubscriptionRepository implements StudentSubscriptionRepositoryInte
         $subscription->batch_id = $request['batch_id'] ?? 0;
         $subscription->category_id = $request['category_id'] ?? 0;
         $subscription->amount = $request['amount'] ?? 0;
+        $subscription->payment_date = $request['payment_date'] ?? 0;
+        $subscription->payment_mode = $request['payment_mode'] ?? 0;
         $subscription->activate_date = $request['activate_date'] ?? 0;
         $subscription->expired_date = $request['expired_date'] ?? 0;
         $subscription->status = 1;

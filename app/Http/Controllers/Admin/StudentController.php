@@ -16,6 +16,7 @@ use App\Models\StudentLedger;
 use App\Models\StudentSubscription;
 use App\Models\StudentAttendance;
 use App\Models\StudentInquiry;
+use App\Models\PaymentMode;
 use Hash;
 
 use App\Repositories\Student\StudentRepositoryInterface;
@@ -110,12 +111,13 @@ class StudentController extends Controller
             $batch=$request->batch;
 
             $batchdata=Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
+            $paymentmode=PaymentMode::get();
             if(empty($Student))
         {
             return redirect()->route('student.index')->with('error','No Data Found');
         }else{
 
-            return view('admin.student.register_student', compact('Student','search','batch','batchdata'));
+            return view('admin.student.register_student', compact('Student','search','batch','batchdata','paymentmode'));
             }
         } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
@@ -590,9 +592,10 @@ foreach ($subscriptions as $subscription) {
     }
     public function updatepaid_student(Request $request)
     {
-        try
-        {
-            $id=$request->student_request_id;
+        /*try
+        {*/
+
+             $id=$request->student_request_id;
 
             $student=Student::find($id);
 
@@ -633,9 +636,12 @@ foreach ($subscriptions as $subscription) {
                 'category_id' => $student->category_id,
                 'total_session' => $plan->plan_session,
                 'amount' => $plan->plan_amount,
+                'payment_date' => $request->payment_date,
+                'payment_mode' => $request->payment_mode,
                 'activate_date' => date('Y-m-d'),
                 'expired_date' => date('Y-m-d'),
             ];
+
 
             $subscription = $this->studentsubscription->createOrUpdate($sdata1);
 
@@ -659,10 +665,10 @@ foreach ($subscriptions as $subscription) {
 
             return redirect()->route('student.active_student')->with('success', 'Payment processed successfully!');
 
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
             // Log the exception or handle it in any other way you prefer
             return redirect()->back()->with('error', 'An error occurred while updating the student.');
-        }
+        }*/
     }
     
     
