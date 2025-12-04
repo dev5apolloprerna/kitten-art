@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -365,60 +366,49 @@ class StudentController extends Controller
     }*/
 
     public function delete(Request $request)
-    {
-        $id = $request->student_id; // can be int or array
+{
+    $id = $request->student_id; // int or array
 
-        try {
-            DB::transaction(function () use ($id) {
+    try {
+        DB::transaction(function () use ($id) {
+            $ids = is_array($id) ? $id : [$id];
 
-                // Normalize to array so this works for single or multiple IDs
-                $ids = is_array($id) ? $id : [$id];
+            // 0) Soft delete students (do NOT hard delete)
+            DB::table('student_master')->whereIn('student_id', $ids)->delete();
 
-                // 1) Delete attendance rows for these students
-                DB::table('student_attendance')
-                    ->whereIn('student_id', $ids)
-                    ->delete();
+            // Keep your cleanup if you still really want it (optional)
+            DB::table('student_attendance')->whereIn('student_id', $ids)->delete();
+            DB::table('student_attendance_master')->whereNotExists(function ($q) {
+                $q->select(DB::raw(1))
+                  ->from('student_attendance')
+                  ->whereColumn('student_attendance_master.sattendanceid', 'student_attendance.attendence_id');
+            })->delete();
+            DB::table('student_subscription')->whereIn('student_id', $ids)->delete();
+            DB::table('student_ledger')->whereIn('student_id', $ids)->delete();
 
-                // 2) (Optional but recommended)
-                //    Remove orphaned rows in student_attendance_master that are no longer referenced
-                DB::table('student_attendance_master')
-                    ->whereNotExists(function ($q) {
-                        $q->select(DB::raw(1))
-                          ->from('student_attendance')
-                          ->whereColumn('student_attendance_master.sattendanceid', 'student_attendance.attendence_id');
-                    })
-                    ->delete();
+            
+        });
 
-                // 3) Delete subscriptions
-                DB::table('student_subscription')
-                    ->whereIn('student_id', $ids)
-                    ->delete();
-
-                // 4) Delete ledger rows
-                DB::table('student_ledger')
-                    ->whereIn('student_id', $ids)
-                    ->delete();
-
-                // 5) Finally delete the student(s)
-                // If $this->student is an Eloquent model (e.g., Student::class):
-                $this->student->destroy($ids);
-            });
-
-            $request->session()->forget('student_id');
-
-            $request->session()->forget('student_name');
-
-            $request->session()->forget('email');
-
-            $request->session()->forget('mobile');
-
-            $request->session()->forget('student_role_id');
-            return back()->with('success', 'Student deleted successfully');
-        } catch (\Throwable $e) {
-            return redirect()->back()
-                ->with('error', 'An error occurred: ' . $e->getMessage());
+        // If current browser belongs to a just-deleted student, log it out
+        $ids = (array) $id;
+        if (Auth::guard('student')->check()
+            && in_array(Auth::guard('student')->id(), $ids, true)) {
+            Auth::guard('student')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         }
+
+        // Clear your custom session keys (safe)
+        $request->session()->forget([
+            'student_id','student_name','email','mobile','student_role_id'
+        ]);
+
+        return back()->with('success', 'Student deleted successfully');
+    } catch (\Throwable $e) {
+        return back()->with('error', 'An error occurred: '.$e->getMessage());
     }
+}
+
 
     public function view($id)
     {

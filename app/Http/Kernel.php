@@ -139,6 +139,9 @@ class Kernel extends HttpKernel
 
         'check_user_status' => \App\Http\Middleware\CheckUserStatus::class,
 
+        'student.active' => \App\Http\Middleware\EnsureStudentIsActive::class,
+
+
     ];
 
 }

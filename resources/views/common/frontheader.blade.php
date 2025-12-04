@@ -96,22 +96,32 @@
                 </li>
                
               </ul>
-               @if(!isset($id) && (empty($id))) 
-              <div class="others-options d-flex align-items-center" style="margin-right:10px">
-                <div class="option-item">
-                  <a href="{{route('FrontLogin')}}" class="default-btn">Student Login</a>
+               {{-- Header auth block --}}
+              @auth('student')
+                  @php
+                      $u = Auth::guard('student')->user();
+                      $displayName = trim(($u->student_first_name ?? '').' '.($u->student_last_name ?? ''));
+                      if ($displayName === '') {
+                          $displayName = session('student_name'); // fallback if needed
+                      }
+                  @endphp
+
+                 <div class="others-options d-flex align-items-center" style="margin-right:10px">
+                   <div class="option-item">
+                    <a href="{{route('student_profile')}}" class="default-btn">My Account</a>
+                  </div>
+                  <!--<div class="option-item">-->
+                  <!--  <a href="{{route('FrontStudentLogout')}}" class="">Logout</a>-->
+                  <!--</div>-->
                 </div>
-              </div>
               @else
-              <div class="others-options d-flex align-items-center" style="margin-right:10px">
-                 <div class="option-item">
-                  <a href="{{route('student_profile')}}" class="default-btn">My Account</a>
-                </div>
-                <!--<div class="option-item">-->
-                <!--  <a href="{{route('FrontStudentLogout')}}" class="">Logout</a>-->
-                <!--</div>-->
-              </div>
-              @endif
+                  <div class="others-options d-flex align-items-center" style="margin-right:10px">
+                    <div class="option-item">
+                      <a href="{{route('FrontLogin')}}" class="default-btn">Student Login</a>
+                    </div>
+                  </div>
+              @endauth
+
               <div class="others-options d-flex align-items-center">
                 <div class="option-item">
                   <a href="{{route('FrontRegistration')}}" class="default-btn">Register Now</a>
