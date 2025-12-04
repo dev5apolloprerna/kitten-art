@@ -240,10 +240,27 @@ class FrontStudentController extends Controller
                 ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
                 ->orderBy('student_subscription.subscription_id','desc')->get();
 
-                $debit_balance = StudentLedger::where(['student_ledger.student_id'=> $id,'student_subscription.status' => 1])->where('attendence_id', '!=', 0)
+ $debit_balance = StudentLedger::where('student_id', $id)
+                ->where('attendence_id', '!=', 0)
                 ->where('attendence_detail_id', '!=', 0)
-                ->join('student_subscription', 'student_subscription.subscription_id', '=', 'student_ledger.subscription_id')
                 ->sum('debit_balance');
+
+        /* StudentLedger::select(
+
+    'student_ledger.*','student_subscription.amount','student_subscription.activate_date','student_subscription.total_session',
+
+    DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'),
+
+    DB::raw('(select plan_session from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as plan_session'),
+
+    DB::raw('(select plan_image from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as plan_image'),
+)
+
+->join('student_subscription', 'student_subscription.subscription_id', '=', 'student_ledger.subscription_id')->where(['student_ledger.student_id'=>$id])
+
+->orderBy('ledger_id', 'DESC')->get();*/
+
+
 
 
         return view('frontview.student_plan',compact('active_plan','debit_balance'));

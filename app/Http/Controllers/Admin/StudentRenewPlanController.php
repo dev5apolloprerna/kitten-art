@@ -133,7 +133,7 @@ class StudentRenewPlanController extends Controller
              $request->validate([
                 'category_id' => 'required', 
                 'plan_id' => 'required', 
-                'student_name' => 'required', 
+                // 'student_name' => 'required', 
                 'batch_id' => 'required', 
             ], [
                 'category_id.required' => 'Please select a category.',

@@ -112,7 +112,7 @@
                                                                         </a>
                                                                         
                                                                         <a class="" href="#" data-bs-toggle="modal"
-                                                                            title="Mark As Paid" data-bs-target="#paymentModal"
+                                                                            title="Mark As Paid" data-bs-target="#paymentModal_<?= $sdata->student_id ?>"
                                                                             onclick="paymentData(<?= $sdata->student_id ?>);">
                                                                             <i class="fa fa-dollar" aria-hidden="true"></i>
                                                                         </a>
@@ -134,6 +134,74 @@
                                                                 </td>
                                                             </tr>
                                                         <?php $i++; ?>
+
+                                                        <div class="modal fade flip" id="paymentModal_{{ $sdata->student_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+
+                                                                <div class="modal-header bg-light p-3">
+
+                                                                    <h5 class="modal-title" id="exampleModalLabel">Edit Status</h5>
+
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+
+                                                                    id="close-modal"></button>
+
+                                                                </div>
+
+                                                                <form id="request-form" method="POST" action="{{ route('student.updatepaid_student') }}">
+                                                                            @csrf
+
+                                                                <input type="hidden" name="student_request_id" id="paymentid" value="{{ $sdata->student_id }}">
+
+
+
+                                                                <div class="modal-body">
+
+                                                                    <div class="mb-3">
+
+                                                                        <span style="color:red;">*</span>Payment Date
+
+                                                                        <input type="date" name="payment_date" class="form-control" >
+                                                                    </div>
+                                                                    <div class="mb-3">
+
+                                                                        <span style="color:red;">*</span>Status
+
+                                                                        <select class="form-control" name="payment_mode" id="Editpayment_mode">
+                                                                        @foreach($paymentmode as $p)
+                                                                        <option value="{{ $p->id }}" {{ $p->type == $sdata->payment_mode ? 'selected' : '' }}>{{ $p->type }}</option>
+
+                                                                        @endforeach
+                                                                        </select >
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="modal-footer">
+
+                                                                    <div class="hstack gap-2 justify-content-end">
+
+                                                                        <button type="submit" class="btn btn-primary mx-2" id="confirm-payment">Submit</button>
+
+                                                                        <button type="button" class="btn btn-primary mx-2"
+
+                                                                        data-bs-dismiss="modal">Cancel</button>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
                                                         @endforeach
                                                         @else
                                                          <tr>
@@ -192,8 +260,9 @@
                                                     </div>
                                                     <!--end modal -->
 
+                                                    
 
-                                                    <div class="modal fade zoomIn" id="paymentModal" tabindex="-1" aria-hidden="true">
+                                                    <!-- <div class="modal fade zoomIn" id="paymentModal" tabindex="-1" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
@@ -230,7 +299,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                     <!--end modal -->
 
 
@@ -253,9 +322,9 @@
         function deleteData(id) {
             $("#deleteid").val(id);
         }
-        function paymentData(id) {
+        /*function paymentData(id) {
             $("#paymentid").val(id);
-        }
+        }*/
         function myFunction() 
         {
             $('#search').removeAttr('value');
