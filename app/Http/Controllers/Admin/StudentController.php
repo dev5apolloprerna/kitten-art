@@ -131,10 +131,13 @@ class StudentController extends Controller
                     'student_master.*',
                     'student_subscription.total_session',
                     'student_subscription.status',
+                    'student_subscription.payment_mode',
+                    'student_subscription.payment_date',
                     DB::raw('(select category_name from category_master where category_master.category_id = student_master.category_id limit 1) as categoryName'), 
                     DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
                     DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
                     DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchname'),
+                    DB::raw('(select type from payment_mode where payment_mode.id = student_subscription.payment_mode limit 1) as payment_mode'),
                     DB::raw('(
                         SELECT 
                             SUM(debit_balance) - 
@@ -193,6 +196,8 @@ class StudentController extends Controller
                     DB::raw('(select category_name from category_master where category_master.category_id = student_master.category_id limit 1) as categoryName'), 
                     DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
                     DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
+                    DB::raw('(select type from payment_mode where payment_mode.id = student_subscription.payment_mode limit 1) as payment_mode'),
+
                     DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchname'),DB::raw('(
                         SELECT 
                             SUM(debit_balance) - 
@@ -303,27 +308,39 @@ class StudentController extends Controller
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
          }
     }
+    public function activeEdit(plan $plan,$id)
+    {
+
+        try{
+
+            $data = $this->student->find($id);
+            $plans=Plan::where(['iStatus'=>1,'isDelete'=>0])->get();
+            $batches=Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
+            $category=Category::where(['iStatus'=>1,'isDelete'=>0])->get();
+
+            if(!($data))
+            {
+                return redirect()->back()->with('error','No Data Found');
+            }else
+            {
+                return view('admin.student.active_student_edit',compact('data','plans','category','batches'));
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+         }
+    }
 
     public function update(Request $request, $id)
     {
             $request->validate([
-                'category_id' => 'required', 
-                'plan_id' => 'required', 
-                'batch_id' => 'required', 
                 'student_first_name' => 'required', 
                 'student_last_name' => 'required',        
-                'student_age' => 'required|integer',        
                 'mobile' => 'required|digits:10',        
                 'parent_name' => 'required',        
                 'communication_mode' => 'required',        
             ], [
-                'category_id.required' => 'Please select a category.',
-                'plan_id.required' => 'Please select a plan.',
-                'batch_id.required' => 'Please select a batch.',
                 'student_first_name.required' => 'Student first name is required.',
                 'student_last_name.required' => 'Student last name is required.',
-                'student_age.required' => 'Please enter the student\'s age.',
-                'student_age.integer' => 'The age must be a number.',
                 'mobile.required' => 'Mobile number is required.',
                 'mobile.digits' => 'Mobile number must be 10 digits.',
                 'parent_name.required' => 'Parent name is required.',

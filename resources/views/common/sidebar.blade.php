@@ -87,7 +87,7 @@ $role = auth()->user()->role_id;
                         </a>
                         <div class="menu-dropdown collapse {{ request()->routeIs([
                               'studentinquiry.index','student.index','student.register_student','student.active_student',
-                              'renewPlan.renew_plan','student.view','studentinquiry.view','studentinquiry.edit',
+                              'renewPlan.renew_plan','student.view','studentinquiry.view','studentinquiry.edit','student.activeEdit',
                               'student.edit','student.active_student_view','renewPlan.edit_renew_student','student.inactive_student'
                           ]) ? 'show' : '' }}
                         " id="sidebarDashboards" style="">
@@ -112,7 +112,7 @@ $role = auth()->user()->role_id;
                                 <li class="nav-item">
                                     <a href="{{ route('student.active_student') }}"
                                        class="nav-link menu-link
-                                       {{ request()->routeIs('student.active_student','student.active_student_view') && $ctx !== 'inactive' ? 'active' : '' }}">
+                                       {{ request()->routeIs('student.active_student','student.active_student_view','student.activeEdit') && $ctx !== 'inactive' ? 'active' : '' }}">
                                        <i class="fas fa-credit-card"></i> Active Student
                                     </a>
                                 </li>
@@ -150,10 +150,16 @@ $role = auth()->user()->role_id;
                             <i class="fas fa-file-alt"></i>
                             <span data-key="t-dashboards">Report</span>
                         </a>
-                        <div class="menu-dropdown collapse {{ in_array(request()->route()->getName(), ['report.upcoming_renew','report.attendance_report','report.upcoming_view']) ? 'show' : '' }}
+                        <div class="menu-dropdown collapse {{ in_array(request()->route()->getName(), ['report.upcoming_renew','report.renewal_report','report.attendance_report','report.upcoming_view']) ? 'show' : '' }}
                         " id="reportsidebar" style="">
                             <ul class="nav nav-sm flex-column">
                                
+                                <li class="nav-item">
+                                    <a href="{{ route('report.renewal_report') }}" class="nav-link menu-link
+                                    @if (request()->routeIs('report.renewal_report', 'report.upcoming_view')) active @endif"
+                                        data-key="t-crm">
+                                    <i class="fa-solid fa-font-awesome"></i>Renewal Report</a>
+                                </li>
                                 <li class="nav-item">
                                     <a href="{{ route('report.upcoming_renew') }}" class="nav-link menu-link
                                     @if (request()->routeIs('report.upcoming_renew', 'report.upcoming_view')) active @endif"

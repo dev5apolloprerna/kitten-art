@@ -71,11 +71,7 @@ class StudentSubscriptionRepository implements StudentSubscriptionRepositoryInte
         }else{
 
             
-
         }
-
-
-
         $subscription->student_id = $request['student_id'] ?? 0;
         $subscription->plan_id = $request['plan_id'] ?? 0;
         $subscription->total_session = $request['total_session'] ?? 0;

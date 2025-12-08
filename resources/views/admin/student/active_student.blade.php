@@ -141,6 +141,8 @@
                                                             <th> Used Session </th>  
 
                                                             <th> Available Session </th>  
+                                                            <th> Payment Date </th>  
+                                                            <th> Payment Mode </th>  
 
                                                             <th width="90"> Action </th>
 
@@ -229,6 +231,18 @@
                                                                     {{ $sdata->total_session - $sdata->debit_balance ?? '-'  }}
 
                                                                 </td>
+                                                                <td>
+                                                                    
+                                                                    {{ $sdata->payment_date ? date('d-m-Y', strtotime($sdata->payment_date)) : '-' }}
+
+
+
+                                                                </td>
+                                                                <td>
+
+                                                                    {{ $sdata->payment_mode ?? '-'  }}
+
+                                                                </td>
 
                                                                 
 
@@ -236,13 +250,13 @@
 
                                                                     <div class="d-flex gap-2">
 
-                                                                        <!--<a class="" title="Edit"
+                                                                        <a class="" title="Edit"
 
-                                                                            href="{{ route('student.edit', $sdata->student_id) }}">
+                                                                            href="{{ route('student.activeEdit', $sdata->student_id) }}">
 
                                                                             <i class="far fa-edit"></i>
 
-                                                                        </a>-->
+                                                                        </a>
 
                                                                         <a class="" href="#" data-bs-toggle="modal"
 

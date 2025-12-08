@@ -141,6 +141,8 @@
                                                             <th> Used Session </th>  
 
                                                             <th> Available Session </th>  
+                                                            <th> Payment Date </th>  
+                                                            <th> Payment Mode</th>  
 
                                                             <th width="90"> Action </th>
 
@@ -229,7 +231,16 @@
                                                                     {{ $sdata->total_session  - $sdata->debit_balance ?? '-'  }}
 
                                                                 </td>
+                                                                <td>
 
+                                                                    {{ $sdata->payment_date ? date('d-m-Y', strtotime($sdata->payment_date)) : '-' }}
+
+                                                                </td>
+                                                                <td>
+
+                                                                    {{ $sdata->payment_mode ?? '-'  }}
+
+                                                                </td>
                                                                 
 
                                                                 <td>

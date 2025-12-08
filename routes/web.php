@@ -116,6 +116,7 @@ Route::prefix('admin')->name('student.')->middleware('auth')->group(function () 
     Route::get('student/create', [StudentController::class, 'create'])->name('create');
     Route::post('student/store', [StudentController::class, 'store'])->name('store');
     Route::get('student/edit/{id?}', [StudentController::class, 'edit'])->name('edit');
+    Route::get('student/active-edit/{id?}', [StudentController::class, 'activeEdit'])->name('activeEdit');
     Route::post('student/update/{id?}', [StudentController::class, 'update'])->name('update');
     Route::delete('student/delete', [StudentController::class, 'delete'])->name('delete');
     Route::get('student/view/{id?}', [StudentController::class, 'view'])->name('view');
@@ -178,6 +179,7 @@ Route::prefix('admin')->name('report.')->middleware('auth')->group(function () {
     Route::any('report/edit_attendance', [ReportController::class,'editAttendance'])->name('editAttendance');
     Route::any('report/ajax_attendance_report', [ReportController::class,'ajax_attendance_report'])->name('ajax_attendance_report');
     Route::get('report/get-attendance-dates', [ReportController::class, 'getAttendanceDates'])->name('get-attendance-dates');
+    Route::any('report/renewal_report', [ReportController::class,'renewal_report'])->name('renewal_report');
 
 });
 
