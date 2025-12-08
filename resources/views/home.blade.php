@@ -36,6 +36,36 @@
                             <!--end row-->
 
                              <div class="row">
+                                <div class="col-xl-3 col-md-6">
+                                    <!-- card -->
+                                    <div class="card card-animate bg-primary">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-bold text-white text-truncate mb-0">
+                                                        New Registration</p>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                                <div>
+                                                    <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
+                                                        <span class="counter-value"
+                                                            data-target="{{ $newRegistration }}">{{ $newRegistration }}</span>
+                                                    </h4>
+                                                    <a href="{{ route('studentinquiry.index') }}"
+                                                        class="text-decoration-underline text-white">View
+                                                        Student</a>
+                                                </div>
+                                                <div class="avatar-sm flex-shrink-0">
+                                                    <span class="avatar-title bg-soft-light rounded fs-3">
+                                                        <i class="fas fa-users"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Batch wise student count -->  
                                 <div class="col-xl-3 col-md-6">
                                     <!-- card -->

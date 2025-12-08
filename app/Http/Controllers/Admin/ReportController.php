@@ -111,7 +111,6 @@ class ReportController extends Controller
     }
 
    public function upcoming_renew(Request $request)
-
     {
 
          try{
@@ -140,43 +139,32 @@ class ReportController extends Controller
                 })
 
                 ->when($request->batch, function ($query, $batchsearch) {
-
                     return $query->where('batch_id',$batchsearch);
-
                 })            
-
                 ->join('student_ledger', 'student_ledger.student_id', '=', 'student_master.student_id')
-
                 ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
-
                 ->where('closing_balance', '<=', 2)
                 ->groupBy('student_subscription.subscription_id')
                 ->paginate(env('PER_PAGE_COUNT'));
 
 
-
             $search=$request->search;
-
             $batch=$request->batch;
-
-
 
             $batchdata=Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
 
-
-           
-                return view('admin.report.index', compact('Student','search','batch','batchdata'));
+            return view('admin.report.index', compact('Student','search','batch','batchdata'));
            
         } catch (\Exception $e) {
 
-                return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
 
         }
 
-    }
+    } 
+
 
      public function upcoming_view($id)
-
     {
 
         try{
@@ -606,16 +594,94 @@ return redirect()->back()->with('success', 'Attendance Updated Successfully');
   }
 
      public function getAttendanceDates(Request $request)
-{
-    $attendanceData = StudentAttendance::where(['student_attendance.student_id'=>$request->student_id,'subscription_id'=>$request->subscription_id])
-        ->join('student_attendance_master', 'student_attendance_master.sattendanceid', '=', 'student_attendance.sattendanceid')
-        ->join('student_master', 'student_master.student_id', '=', 'student_attendance.student_id')
-        ->orderBy('student_attendance.attendance_date', 'desc')
+    {
+        $attendanceData = StudentAttendance::where(['student_attendance.student_id'=>$request->student_id,'subscription_id'=>$request->subscription_id])
+            ->join('student_attendance_master', 'student_attendance_master.sattendanceid', '=', 'student_attendance.sattendanceid')
+            ->join('student_master', 'student_master.student_id', '=', 'student_attendance.student_id')
+            ->orderBy('student_attendance.attendance_date', 'desc')
 
-        ->get(['attendance', 'student_attendance.attendance_date','student_first_name','student_last_name']); // Adjust field names if needed
+            ->get(['attendance', 'student_attendance.attendance_date','student_first_name','student_last_name']); // Adjust field names if needed
 
-    return response()->json($attendanceData);
-}  
+        return response()->json($attendanceData);
+    }  
+    public function renewal_report(Request $request)
+    {
+        try {
+
+            // Step 1 — Get last 2 subscription IDs per student
+            $lastTwoSubs = DB::table('student_subscription')
+                ->select('student_id', 'subscription_id')
+                ->orderBy('subscription_id', 'DESC')
+                ->get()
+                ->groupBy('student_id')
+                ->map(function ($subs) {
+                    return $subs->take(2)->pluck('subscription_id');
+                })
+                ->collapse()
+                ->toArray();
+
+            // Step 2 — Fetch those students + subscriptions
+            $Student = DB::table('student_master as s')
+                ->join('student_subscription as ss', 'ss.student_id', '=', 's.student_id')
+                ->leftJoin('plan_master as p', 'p.planId', '=', 'ss.plan_id')
+                ->leftJoin('batch_master as b', 'b.batch_id', '=', 'ss.batch_id')
+                ->leftJoin('category_master as c', 'c.category_id', '=', 's.category_id')
+                ->whereIn('ss.subscription_id', $lastTwoSubs)
+
+                // SEARCH
+                ->when($request->search, function($q, $search){
+                    $q->where(function($w) use ($search){
+                        $w->where('s.student_first_name', 'LIKE', "%$search%")
+                          ->orWhere('s.student_last_name', 'LIKE', "%$search%");
+                    });
+                })
+
+                // BATCH FILTER
+                ->when($request->batch, function($q, $batch){
+                    $q->where('ss.batch_id', $batch);
+                })
+
+                ->select(
+                    's.student_id',
+                    's.student_first_name',
+                    's.student_last_name',
+                    's.mobile',
+                    's.email',
+                    'c.category_name as categoryName',
+
+                    'ss.subscription_id',
+                    'ss.total_session',
+                    'ss.amount',
+                    'ss.activate_date',
+                    'ss.expired_date',
+
+                    'p.plan_name',
+                    'b.batch_name',
+
+                    // Debit Balance
+                    DB::raw("(SELECT 
+                                SUM(debit_balance) - 
+                                SUM(CASE WHEN attendence_id != 0 THEN credit_balance ELSE 0 END)
+                              FROM student_ledger 
+                              WHERE student_ledger.student_id = s.student_id
+                              AND student_ledger.subscription_id = ss.subscription_id
+                    ) AS debit_balance")
+                )
+                ->orderBy('s.student_id')
+                ->orderBy('ss.subscription_id', 'DESC')
+                ->paginate(20);
+
+            // Batch list for dropdown
+            $batchdata = DB::table('batch_master')->where(['iStatus'=>1,'isDelete'=>0])->get();
+
+            return view('admin.report.renewal_report', compact('Student', 'batchdata'));
+
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+
 
 }
 

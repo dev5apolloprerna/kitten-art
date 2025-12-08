@@ -179,12 +179,31 @@
 
 
                                                             <div class="modal-body">
+                                                                    <div class="payment-section" id="payment_section_{{ $sdata->renewplan_id }}" style="display: none;">
+                                                                <div class="mb-3">
 
+                                                                        <span style="color:red;">*</span>Payment Date
+
+                                                                        <input type="date" name="payment_date" class="form-control" >
+                                                                    </div>
+                                                                    <div class="mb-3">
+
+                                                                        <span style="color:red;">*</span>Status
+
+                                                                        <select class="form-control" name="payment_mode" id="Editpayment_mode">
+                                                                        @foreach($paymentmode as $p)
+                                                                        <option value="{{ $p->id }}" {{ $p->type == $sdata->payment_mode ? 'selected' : '' }}>{{ $p->type }}</option>
+
+                                                                        @endforeach
+                                                                        </select >
+
+                                                                    </div>
+                                                                </div>
                                                                 <div class="mb-3">
 
                                                                     <span style="color:red;">*</span>Status
 
-                                                                    <select class="form-control" name="status" id="Editreview_status">
+                                                                    <select class="form-control status-dropdown" name="status" id="Editreview_status" data-id="{{ $sdata->renewplan_id }}">
 
                                                                         <option value="0" {{ $sdata['status'] == 0 ? 'selected' : '' }}>Pending</option>
 
@@ -293,6 +312,31 @@
             $('#batch').val('');
 
         }
+
+$(document).ready(function () {
+
+    // On page load — handle each modal
+    $('.status-dropdown').each(function () {
+        togglePaymentFields($(this));
+    });
+
+    // When status changes
+    $('.status-dropdown').on('change', function () {
+        togglePaymentFields($(this));
+    });
+
+    function togglePaymentFields(elem) {
+        let id = elem.data('id');
+        let val = elem.val();
+        let section = $("#payment_section_" + id);
+
+        if (val == "1") {
+            section.show();   // Accepted
+        } else {
+            section.hide();   // Pending or Rejected
+        }
+    }
+});
 
     </script>
 

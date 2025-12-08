@@ -11,6 +11,7 @@ use Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Models\Student;
+use App\Models\StudentInquiry;
 
 class HomeController extends Controller
 {
@@ -34,7 +35,9 @@ class HomeController extends Controller
         $dayNumber = date('N');
         $batchStudent=Student::where(['batch_master.batch_day'=>$dayNumber])->join('batch_master', 'batch_master.batch_id', '=', 'student_master.batch_id')->count();
 
-        return view('home',compact('batchStudent'));
+        $newRegistration=StudentInquiry::where(['iStatus'=>1,'isDelete'=>0])->count();
+
+        return view('home',compact('batchStudent','newRegistration'));
     }
 
     /**

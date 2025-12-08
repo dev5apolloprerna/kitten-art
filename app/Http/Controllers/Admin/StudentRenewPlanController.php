@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\Renewplan;
 use App\Models\StudentLedger;
 use App\Models\StudentSubscription;
+use App\Models\PaymentMode;
 use App\Repositories\RenewPlan\RenewPlanRepositoryInterface;
 use App\Repositories\RenewPlan\RenewPlanRepository;
 use App\Repositories\StudentSubscription\StudentSubscriptionRepositoryInterface;
@@ -97,7 +98,9 @@ class StudentRenewPlanController extends Controller
                 ->join('student_master', 'student_master.student_id', '=', 'student_renew_plan.student_id')
                 ->orderBy('student_id','desc')->paginate(env('PER_PAGE_COUNT'));
 
-         return view('admin.renew_plan.renew_student_plan', compact('Student'));
+                    $paymentmode=PaymentMode::get();
+
+         return view('admin.renew_plan.renew_student_plan', compact('Student','paymentmode'));
 
         } catch (\Exception $e) {
 
@@ -154,21 +157,23 @@ class StudentRenewPlanController extends Controller
            try{
                 $id=$request->renewplan_id;
                 $status = $request->status;
-                $this->RenewPlan->updateStatus(['status' => $status], $id);
+               
                 $student=RenewPlan::find($id);
                 $sdata=Student::select('parent_name','email')->where(['student_id'=>$student->student_id])->first(); 
              
              $subscription=StudentSubscription::where(['student_id'=>$student->student_id,'status'=>1])->count();
              if($subscription != 0 && $request->status == 1)
                 {
-                return redirect()->back()->with('error', 'You already have an active plan.!');
+                    return redirect()->back()->with('error', 'You already have an active plan.!');
 
                 }
             else
             {
 
+                $this->RenewPlan->updateStatus(['status' => $status], $id);
+               
                  if($request->status == 1)
-             {
+                {
 
                 $plan=Plan::find($student->plan_id);
                 $data = [
@@ -178,6 +183,8 @@ class StudentRenewPlanController extends Controller
                     'category_id' => $student->category_id,
                     'total_session' => $plan->plan_session,
                     'amount' => $plan->plan_amount,
+                    'payment_date' => $request->payment_date,
+                    'payment_mode' => $request->payment_mode,
                     'activate_date' => date('Y-m-d'),
                     'expired_date' => date('Y-m-d')
                 ];
