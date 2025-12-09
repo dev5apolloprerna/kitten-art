@@ -156,12 +156,18 @@
         </div>
         <div class="card-body">
             <div class="row mb-2">
+                <div class="col-md-4"><strong>Payment Date:</strong> {{ date('d-m-Y', strtotime($sub->payment_date)) }}</div>
+                <div class="col-md-4"><strong>Payment Mode:</strong> {{ $sub->payment_mode }}</div>
                 <div class="col-md-4"><strong>Plan Amount:</strong> {{ $sub->planAmount }}</div>
-                <div class="col-md-4"><strong>Total Sessions:</strong> {{ $sub->total_session }}</div>
-                <div class="col-md-4"><strong>Used Sessions:</strong> {{ $sub->debit_balance }}</div>
+                
             </div>
             <div class="row mb-2">
+                <div class="col-md-4"><strong>Total Sessions:</strong> {{ $sub->total_session }}</div>
+                <div class="col-md-4"><strong>Used Sessions:</strong> {{ $sub->debit_balance }}</div>
                 <div class="col-md-4"><strong>Remaining Sessions:</strong> {{ $sub->total_session-$sub->debit_balance }}</div>
+                
+            </div>
+            <div class="row mb-2">
                 <div class="col-md-4"><strong>Activation Date:</strong> {{ date('d-m-Y', strtotime($sub->activate_date)) }}</div>
                 <div class="col-md-4"><strong>Batch Name:</strong> {{ $sub->batchName }}</div>
             </div>

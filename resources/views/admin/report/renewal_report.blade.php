@@ -103,6 +103,8 @@
                                                 <th>Plan</th>
                                                 <th>Batch</th>
                                                 <th>Subscription Date</th>
+                                                <th>Payment Date</th>
+                                                <th>Payment Mode</th>
                                                 <th>Total Sessions</th>
                                                 <th>Amount</th>
                                                 <th>Used Session</th>
@@ -118,7 +120,11 @@
                                                     <td>{{ $sub->plan_name }}</td>
                                                     <td>{{ $sub->batch_name }}</td>
 
-                                                    <td>{{ $sub->activate_date }}</td>
+                                                    <td>{{ date('d-m-Y', strtotime($sub->activate_date)) }}</td>
+                                                    <td>
+                                                        {{ $sub->payment_date ? date('d-m-Y', strtotime($sub->payment_date)) : '-' }}
+                                                    </td>
+                                                    <td>{{ $sub->payment_mode }}</td>
 
                                                     <td>{{ $sub->total_session }}</td>
 

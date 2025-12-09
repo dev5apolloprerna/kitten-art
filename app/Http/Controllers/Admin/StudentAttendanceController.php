@@ -64,18 +64,22 @@ class StudentAttendanceController extends Controller
 
     public function index(Request $request)
     {
-        try
-        {
+        try {
+            $dayNumber = date('N'); // 1 = Monday ... 7 = Sunday
 
-                $dayNumber = date('N');
-                 $Student = Student::select(
-                    'student_master.*','student_subscription.subscription_id',
+            $Student = Student::select(
+                    'student_master.*',
+                    'student_subscription.subscription_id',
                     DB::raw('(select category_name from category_master where category_master.category_id = student_master.category_id limit 1) as categoryName'),
-                    DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
-                    DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
+                    DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'),
+                    DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'),
                     DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchname'),
                     DB::raw('(select batch_day from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchday')
                 )
+
+                ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
+                ->join('batch_master', 'batch_master.batch_id', '=', 'student_subscription.batch_id')
+                
                 ->when($request->search, function ($query, $search) {
                     return $query->where(function ($q) use ($search) {
                         $q->where('student_first_name', 'LIKE', "%{$search}%")
@@ -84,46 +88,33 @@ class StudentAttendanceController extends Controller
                 })
 
                 ->when($request->batch, function ($query, $batchsearch) {
-                    return $query->where('student_master.batch_id', $batchsearch);
-                });
-
-                if (empty($request->search) && empty($request->batch)) 
-                {
-                    $Student->leftJoin(DB::raw("(SELECT student_id, MAX(day) as latest_day, attendance 
-                                                 FROM student_attendance 
-                                                 GROUP BY student_id) as sa"), 
-                                       'sa.student_id', '=', 'student_master.student_id')
-                            ->where(function ($query) use ($dayNumber) {
-                                $query->whereNull('sa.attendance')
-                                      ->orWhere('sa.attendance', '!=', 'P')
-                                      ->orWhere('sa.latest_day', '!=', $dayNumber);
-                            });
-                        $Student->where(['batch_master.batch_day'=>$dayNumber]);
-
-                }
-
-                $Student = $Student->where([
-                    'isWaiting' => 0,
-                    'isRegister' => 1,
-                    'isPaid' => 1,
+                    return $query->where('student_subscription.batch_id', $batchsearch);
+                })
+                ->when(!$request->search && !$request->batch, function ($query) use ($dayNumber) {
+                    return $query->where('batch_master.batch_day', $dayNumber);
+                })
+                ->where([
+                    'student_master.isWaiting' => 0,
+                    'student_master.isRegister' => 1,
+                    'student_master.isPaid' => 1,
                     'student_master.iStatus' => 1,
                     'student_subscription.status' => 1
                 ])
-                ->join('batch_master', 'batch_master.batch_id', '=', 'student_master.batch_id')
-                ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
-            ->orderBy('student_id', 'desc')
+
+                ->orderBy('student_master.student_id', 'desc')
                 ->paginate(env('PER_PAGE_COUNT'));
 
+            $search = $request->search;
+            $batch = $request->batch;
+            $batchdata = Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
 
-            $search=$request->search;
-            $batch=$request->batch;
-            $batchdata=Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
+            return view('admin.student_attendance.index', compact('Student','search','batch','batchdata'));
 
-        return view('admin.student_attendance.index', compact('Student','search','batch','batchdata'));
         } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
     /***********************model popup absent and present attendance code start ****************************************/
  public function getBatchesByCategory(Request $request)
     {
@@ -1007,6 +998,8 @@ class StudentAttendanceController extends Controller
     
 
             $subscription = Student::select('student_master.*','student_subscription.total_session','student_subscription.activate_date',
+
+        
                     DB::raw('(select category_name from category_master where category_master.category_id = student_master.category_id limit 1) as categoryName'), 
                     DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
                     DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
@@ -1050,6 +1043,7 @@ class StudentAttendanceController extends Controller
 
     $subscriptions = StudentSubscription::select(
         'student_subscription.*',
+        DB::raw('(select type from payment_mode where payment_mode.id = student_subscription.payment_mode limit 1) as payment_mode'),
         DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'),
         DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planAmount'),
         DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchName'),

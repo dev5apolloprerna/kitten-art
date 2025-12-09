@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Models\Student;
 use App\Models\StudentInquiry;
+use App\Models\Renewplan;
 
 class HomeController extends Controller
 {
@@ -33,11 +34,23 @@ class HomeController extends Controller
     public function index()
     {
         $dayNumber = date('N');
-        $batchStudent=Student::where(['batch_master.batch_day'=>$dayNumber])->join('batch_master', 'batch_master.batch_id', '=', 'student_master.batch_id')->count();
+        $batchStudent=Student::where(['batch_master.batch_day'=>$dayNumber])
+        ->join('batch_master', 'batch_master.batch_id', '=', 'student_master.batch_id')
+        ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
+        ->where([
+                    'student_master.isWaiting' => 0,
+                    'student_master.isRegister' => 1,
+                    'student_master.isPaid' => 1,
+                    'student_master.iStatus' => 1,
+                    'student_subscription.status' => 1
+                ])->count();
+
+        $StudentRenewal = Renewplan::where(['status'=>0])->join('student_master', 'student_master.student_id', '=', 'student_renew_plan.student_id')
+                ->count();
 
         $newRegistration=StudentInquiry::where(['iStatus'=>1,'isDelete'=>0])->count();
 
-        return view('home',compact('batchStudent','newRegistration'));
+        return view('home',compact('batchStudent','newRegistration','StudentRenewal'));
     }
 
     /**
