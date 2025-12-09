@@ -489,6 +489,7 @@ class StudentController extends Controller
 
             $subscriptions = StudentSubscription::select(
         'student_subscription.*',
+        DB::raw('(select type from payment_mode where payment_mode.id = student_subscription.payment_mode limit 1) as payment_mode'),
         DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'),
         DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planAmount'),
         DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchName'),

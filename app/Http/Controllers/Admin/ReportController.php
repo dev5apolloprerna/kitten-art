@@ -654,10 +654,14 @@ return redirect()->back()->with('success', 'Attendance Updated Successfully');
                     'ss.amount',
                     'ss.activate_date',
                     'ss.expired_date',
+                    'ss.payment_date',
+                    'ss.payment_mode',
 
                     'p.plan_name',
                     'b.batch_name',
 
+
+                    DB::raw('(select type from payment_mode where payment_mode.id = ss.payment_mode limit 1) as payment_mode'),
                     // Debit Balance
                     DB::raw("(SELECT 
                                 SUM(debit_balance) - 

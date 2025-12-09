@@ -163,7 +163,8 @@
 
                                                                         <span style="color:red;">*</span>Payment Date
 
-                                                                        <input type="date" name="payment_date" class="form-control" >
+                                                                        <input type="date" name="payment_date" class="form-control" value="{{ date('Y-m-d') }}">
+
                                                                     </div>
                                                                     <div class="mb-3">
 

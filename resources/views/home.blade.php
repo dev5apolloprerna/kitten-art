@@ -83,7 +83,7 @@
                                                         <span class="counter-value"
                                                             data-target="{{ $batchStudent }}">{{ $batchStudent }}</span>
                                                     </h4>
-                                                    <a href="{{ route('student.index') }}"
+                                                    <a href="{{ route('attendance.index') }}"
                                                         class="text-decoration-underline text-white">View
                                                         Student</a>
                                                 </div>
@@ -111,11 +111,11 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ 0 }}">{{ 0 }}</span>
+                                                            data-target="{{ $StudentRenewal }}">{{ $StudentRenewal }}</span>
                                                     </h4>
-                                                    <a href="{{ route('student.index') }}"
+                                                    <a href="{{ route('renewPlan.renew_plan') }}"
                                                         class="text-decoration-underline text-white">View
-                                                        Payment</a>
+                                                        Renewal Student</a>
                                                 </div>
                                                 <div class="avatar-sm flex-shrink-0">
                                                     <span class="avatar-title bg-soft-light rounded fs-3">
