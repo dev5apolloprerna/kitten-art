@@ -13,6 +13,7 @@ use App\Models\Role;
 use App\Models\Student;
 use App\Models\StudentInquiry;
 use App\Models\Renewplan;
+use App\Models\StudentLedger;
 
 class HomeController extends Controller
 {
@@ -50,7 +51,14 @@ class HomeController extends Controller
 
         $newRegistration=StudentInquiry::where(['iStatus'=>1,'isDelete'=>0])->count();
 
-        return view('home',compact('batchStudent','newRegistration','StudentRenewal'));
+        $upcomingRenewal=  Student::join('student_ledger', 'student_ledger.student_id', '=', 'student_master.student_id')
+                ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
+                ->where('closing_balance', '<=', 2)
+                // ->where('student_subscription.status', 1)
+                ->groupBy('student_subscription.subscription_id')
+                ->get();
+
+        return view('home',compact('batchStudent','newRegistration','StudentRenewal','upcomingRenewal','upcomingRenewal'));
     }
 
     /**

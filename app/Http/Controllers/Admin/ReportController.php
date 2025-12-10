@@ -121,7 +121,8 @@ class ReportController extends Controller
 
                     DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
                     DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
-                    DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchname'),DB::raw('(
+                    DB::raw('(select batch_name from batch_master where batch_master.batch_id = student_subscription.batch_id limit 1) as batchname')
+                    ,DB::raw('(
                         SELECT 
                             SUM(debit_balance) - 
                             SUM(CASE 
@@ -138,13 +139,15 @@ class ReportController extends Controller
                                  ->orWhere('student_last_name', 'LIKE', "%{$search}%");
                 })
 
-                ->when($request->batch, function ($query, $batchsearch) {
+                ->when($request->batch, function ($query, $batchsearch) 
+                {
                     return $query->where('batch_id',$batchsearch);
                 })            
                 ->join('student_ledger', 'student_ledger.student_id', '=', 'student_master.student_id')
                 ->join('student_subscription', 'student_subscription.student_id', '=', 'student_master.student_id')
                 ->where('closing_balance', '<=', 2)
-                ->groupBy('student_subscription.subscription_id')
+                // ->where('student_subscription.status', 1)
+                ->groupBy('student_subscription.student_id')
                 ->paginate(env('PER_PAGE_COUNT'));
 
 
@@ -659,8 +662,6 @@ return redirect()->back()->with('success', 'Attendance Updated Successfully');
 
                     'p.plan_name',
                     'b.batch_name',
-
-
                     DB::raw('(select type from payment_mode where payment_mode.id = ss.payment_mode limit 1) as payment_mode'),
                     // Debit Balance
                     DB::raw("(SELECT 
