@@ -141,11 +141,11 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ 0 }}">{{ 0 }}</span>
+                                                            data-target="{{ $upcomingRenewal->count(); }}">{{ $upcomingRenewal->count(); }}</span>
                                                     </h4>
-                                                    <a href="{{ route('student.index') }}"
+                                                    <a href="{{ route('report.upcoming_renew') }}"
                                                         class="text-decoration-underline text-white">View
-                                                        Payment</a>
+                                                       Upcoming Renewal</a>
                                                 </div>
                                                 <div class="avatar-sm flex-shrink-0">
                                                     <span class="avatar-title bg-soft-light rounded fs-3">
