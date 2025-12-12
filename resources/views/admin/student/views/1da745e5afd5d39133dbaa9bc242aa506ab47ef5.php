@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Active Student List'); ?>
 
-@section('title', 'Active Student List')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 
@@ -18,9 +16,9 @@
 
 
 
-                {{-- Alert Messages --}}
+                
 
-                @include('common.alert')
+                <?php echo $__env->make('common.alert', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                 <div class="row">
 
@@ -42,9 +40,9 @@
 
                             <div class="card-body">
 
-                                <form method="post" action="{{ route('student.active_student') }}" id="myForm">
+                                <form method="post" action="<?php echo e(route('student.active_student')); ?>" id="myForm">
 
-                                    @csrf
+                                    <?php echo csrf_field(); ?>
 
                                      <div class="row"> 
 
@@ -58,11 +56,11 @@
 
                                                     <option value="">Select Batch</option>
 
-                                                    @foreach($batchdata as $b)
+                                                    <?php $__currentLoopData = $batchdata; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                                                    <option value="{{$b->batch_id}}" {{ $b->batch_id == $batch ? 'selected' : '' }}>{{ $b->batch_name }}</option>
+                                                    <option value="<?php echo e($b->batch_id); ?>" <?php echo e($b->batch_id == $batch ? 'selected' : ''); ?>><?php echo e($b->batch_name); ?></option>
 
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                                                 </select>   
 
@@ -78,7 +76,7 @@
 
                                                 <label for="name">Search By Student Name </label>
 
-                                                <input type="text" name="search" id="search" class="form-control" value="{{ $search ?? '' }}">
+                                                <input type="text" name="search" id="search" class="form-control" value="<?php echo e($search ?? ''); ?>">
 
                                             </div>
 
@@ -88,9 +86,9 @@
 
                                             <div class="form-group">
 
-                                            <input class="btn btn-primary" style="margin-top: 10%;" type="submit" value="{{'Search'}}">
+                                            <input class="btn btn-primary" style="margin-top: 10%;" type="submit" value="<?php echo e('Search'); ?>">
 
-                                            <input class="btn btn-primary" style="margin-top: 10%;" type="submit" onclick="myFunction()" value="{{'Reset'}}">
+                                            <input class="btn btn-primary" style="margin-top: 10%;" type="submit" onclick="myFunction()" value="<?php echo e('Reset'); ?>">
 
 
 
@@ -152,95 +150,109 @@
 
                                                     <tbody>
 
-                                                     @if(count($Student) > 0)
+                                                     <?php if(count($Student) > 0): ?>
 
                                                     <?php $i = 1;
 
                                                     ?>
 
-                                                        @foreach($Student as $key => $sdata)
+                                                        <?php $__currentLoopData = $Student; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $sdata): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-                                                            <tr data-entry-id="{{ $sdata->student_id }}" class="text-center">
+                                                            <tr data-entry-id="<?php echo e($sdata->student_id); ?>" class="text-center">
 
                                                                 <td>
 
-                                                                    {{ $i + $Student->perPage() * ($Student->currentPage() - 1) }}
+                                                                    <?php echo e($i + $Student->perPage() * ($Student->currentPage() - 1)); ?>
+
 
                                                                 </td>
 
                                                                 <td>
-                                                                    {{ $sdata->student_first_name ?? '' }} {{ $sdata->student_last_name ?? '' }}
-                                                                </td>
-
-                                                                <td>
-
-                                                                    {{ $sdata->mobile ?? '' }}
+                                                                    <?php echo e($sdata->student_first_name ?? ''); ?> <?php echo e($sdata->student_last_name ?? ''); ?>
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->email ?? '' }}
+                                                                    <?php echo e($sdata->mobile ?? ''); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->student_age ?? '' }}
+                                                                    <?php echo e($sdata->email ?? ''); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->categoryName ?? '-'  }}
+                                                                    <?php echo e($sdata->student_age ?? ''); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->planName ?? '-'  }}
+                                                                    <?php echo e($sdata->categoryName ?? '-'); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->batchname ?? '-'  }}
+                                                                    <?php echo e($sdata->planName ?? '-'); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->amount ?? '-'  }}
+                                                                    <?php echo e($sdata->batchname ?? '-'); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->total_session ?? '0'  }}
+                                                                    <?php echo e($sdata->amount ?? '-'); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->debit_balance ?? '-'  }}
+                                                                    <?php echo e($sdata->total_session ?? '0'); ?>
+
 
                                                                 </td>
 
                                                                 <td>
 
-                                                                    {{ $sdata->total_session - $sdata->debit_balance ?? '-'  }}
+                                                                    <?php echo e($sdata->debit_balance ?? '-'); ?>
+
+
+                                                                </td>
+
+                                                                <td>
+
+                                                                    <?php echo e($sdata->total_session - $sdata->debit_balance ?? '-'); ?>
+
 
                                                                 </td>
                                                                 <td>
                                                                     
-                                                                    {{ $sdata->payment_date ? date('d-m-Y', strtotime($sdata->payment_date)) : '-' }}
+                                                                    <?php echo e($sdata->payment_date ? date('d-m-Y', strtotime($sdata->payment_date)) : '-'); ?>
+
 
 
 
                                                                 </td>
                                                                 <td>
 
-                                                                    {{ $sdata->payment_mode ?? '-'  }}
+                                                                    <?php echo e($sdata->payment_mode ?? '-'); ?>
+
 
                                                                 </td>
 
@@ -252,14 +264,10 @@
 
                                                                         <a class="" title="Edit"
 
-                                                                            href="{{ route('student.activeEdit', $sdata->student_id) }}">
+                                                                            href="<?php echo e(route('student.activeEdit', $sdata->student_id)); ?>">
 
                                                                             <i class="far fa-edit"></i>
 
-                                                                        </a>
-                                                                        <a class="mx-1" title="Edit Payment Data" href="#" 
-                                                                            data-bs-toggle="modal" data-bs-target="#editModal_{{ $sdata->student_id }}">
-                                                                            <i class="fa fa-check"></i>
                                                                         </a>
 
                                                                         <a class="" href="#" data-bs-toggle="modal"
@@ -272,7 +280,7 @@
 
                                                                         </a>
 
-                                                                        <a class="mx-1" title="change password" href="{{ route('student.changepassword', $sdata->student_id) }}">
+                                                                        <a class="mx-1" title="change password" href="<?php echo e(route('student.changepassword', $sdata->student_id)); ?>">
 
                                                                             <i class="fa-solid fa-key"></i>
 
@@ -280,7 +288,7 @@
 
                                                                         <a class="" title="View"
 
-                                                                            href="{{ route('student.active_student_view', ['id' => $sdata->student_id, 'ctx' => 'active']) }}">
+                                                                            href="<?php echo e(route('student.active_student_view', ['id' => $sdata->student_id, 'ctx' => 'active'])); ?>">
 
                                                                             <i class="fa fa-info"></i>
                                                                         </a>
@@ -317,7 +325,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                                                        <a class="btn btn-danger" id="confirm-payment" href="{{ route('logout') }}"
+                                                                        <a class="btn btn-danger" id="confirm-payment" href="<?php echo e(route('logout')); ?>"
                                                                             onclick="event.preventDefault(); document.getElementById('request-form').submit();">
                                                                             Yes,
                                                                             Confirm It!
@@ -325,8 +333,8 @@
                                                                         <button type="button" class="btn w-sm btn-light"
                                                                             data-bs-dismiss="modal">Close</button>
                                                                         
-                                                                        <form id="request-form" method="POST" action="{{ route('renewPlan.create') }}">
-                                                                            @csrf
+                                                                        <form id="request-form" method="POST" action="<?php echo e(route('renewPlan.create')); ?>">
+                                                                            <?php echo csrf_field(); ?>
                                                                             <input type="hidden" name="student_id" id="renew_student_id" value="">
 
 
@@ -337,91 +345,11 @@
                                                         </div>
                                                     </div>
                                                     <!--end modal -->
-
-                                                    <!-- payment model popup -->
-                                                    <div class="modal fade flip" id="editModal_{{ $sdata->student_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-
-                                                <div class="modal-dialog">
-
-                                                    <div class="modal-content">
-
-                                                        <div class="modal-header bg-light p-3">
-
-                                                            <h5 class="modal-title" id="exampleModalLabel">Edit Payment Data</h5>
-
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-
-                                                                id="close-modal"></button>
-
-                                                        </div>
-
-                                                        <form method="POST" action="{{ route('student.updatepayment') }}" autocomplete="off"
-
-                                                            enctype="multipart/form-data">
-
-                                                            @csrf
-
-                                                            <input type="hidden" name="subscription_id" id="subscription_id" value="{{ $sdata->subscription_id }}">
-
-
-                                                            @php
-                                                                $paymentDate = !empty($sdata->payment_date)
-                                                                    ? date('Y-m-d', strtotime($sdata->payment_date))
-                                                                    : null;
-                                                            @endphp
-                                                            <div class="modal-body">
-                                                                    <div class="payment-section" id="payment_section_{{ $sdata->subscription_id }}">
-                                                                <div class="mb-3">
-
-                                                                        <span style="color:red;">*</span>Payment Date
-
-                                                                        <input type="date" name="payment_date" class="form-control" value="{{ $paymentDate }}">
-                                                                    </div>
-                                                                   
-                                                                    <div class="mb-3">
-
-                                                                        <span style="color:red;">*</span>Status
-
-                                                                        <select class="form-control" name="payment_mode" id="Editpayment_mode">
-                                                                        @foreach($paymentmode as $p)
-                                                                        <option value="{{ $p->id }}" {{ $p->type == $sdata->payment_mode ? 'selected' : '' }}>{{ $p->type }}</option>
-
-                                                                        @endforeach
-                                                                        </select >
-
-                                                                    </div>
-                                                                </div>
-                                                              
-
-                                                            </div>
-
-                                                            <div class="modal-footer">
-
-                                                                <div class="hstack gap-2 justify-content-end">
-
-                                                                    <button type="submit" class="btn btn-primary mx-2" id="add-btn">Update</button>
-
-                                                                    <button type="button" class="btn btn-primary mx-2"
-
-                                                                        data-bs-dismiss="modal">Cancel</button>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </form>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                                    <!-- payment model popup -->
                                                         <?php $i++; ?>
 
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                                                        @else
+                                                        <?php else: ?>
 
                                                          <tr>
 
@@ -439,7 +367,7 @@
 
                                                         </tr>
 
-                                                        @endif
+                                                        <?php endif; ?>
 
                                                     </tbody>
 
@@ -447,11 +375,12 @@
 
                                              <div class="d-flex justify-content-center mt-3">
 
-                                                {{ $Student->links() }}
+                                                <?php echo e($Student->links()); ?>
+
 
                                             </div>
 
-                                                @if(count($Student) > 0)
+                                                <?php if(count($Student) > 0): ?>
 
 
 
@@ -493,7 +422,7 @@
 
                                                                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
 
-                                                                        <a class="btn btn-danger" href="{{ route('logout') }}"
+                                                                        <a class="btn btn-danger" href="<?php echo e(route('logout')); ?>"
 
                                                                             onclick="event.preventDefault(); document.getElementById('bus-delete-form').submit();">
 
@@ -509,11 +438,11 @@
 
                                                                         
 
-                                                                        <form id="bus-delete-form" method="POST" action="{{ route('student.delete') }}">
+                                                                        <form id="bus-delete-form" method="POST" action="<?php echo e(route('student.delete')); ?>">
 
-                                                                            @csrf
+                                                                            <?php echo csrf_field(); ?>
 
-                                                                            @method('DELETE')
+                                                                            <?php echo method_field('DELETE'); ?>
 
                                                                             <input type="hidden" name="student_id" id="deleteid" value="">
 
@@ -533,7 +462,7 @@
 
                                                     <!--end modal -->
 
-                                                    @endif
+                                                    <?php endif; ?>
 
                                                 </div>
 
@@ -559,9 +488,9 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 
     <script>
 
@@ -592,7 +521,9 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
 
 
 
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/labtrade/public_html/kittenart/newkittenart/resources/views/admin/student/active_student.blade.php ENDPATH**/ ?>
