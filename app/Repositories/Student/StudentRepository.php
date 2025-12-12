@@ -37,7 +37,11 @@ class StudentRepository implements StudentRepositoryInterface
     public function find($id)
 
     {
-            $student = Student::find($id);
+             $student = Student::with([
+                            'subscriptions' => function ($q) {
+                                $q->where('status', 1)->latest(); 
+                            }
+                        ])->find($id);
             
             if (!$student) {
                 return null;

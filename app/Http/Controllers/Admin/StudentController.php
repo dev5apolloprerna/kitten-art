@@ -133,6 +133,7 @@ class StudentController extends Controller
                     'student_subscription.status',
                     'student_subscription.payment_mode',
                     'student_subscription.payment_date',
+                    'student_subscription.subscription_id',
                     DB::raw('(select category_name from category_master where category_master.category_id = student_master.category_id limit 1) as categoryName'), 
                     DB::raw('(select plan_name from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as planName'), 
                     DB::raw('(select plan_amount from plan_master where plan_master.planId = student_subscription.plan_id limit 1) as amount'), 
@@ -174,13 +175,14 @@ class StudentController extends Controller
 
             $category=Category::where(['iStatus'=>1,'isDelete'=>0])->get();
             $plan=Plan::where(['iStatus'=>1,'isDelete'=>0])->get();
+            $paymentmode=PaymentMode::get();
 
         if(empty($Student))
         {
             return redirect()->route('student.index')->with('error','No Data Found');
         }else{
         
-        return view('admin.student.active_student', compact('Student','search','batch','batchdata','category','plan'));
+        return view('admin.student.active_student', compact('Student','search','batch','batchdata','category','plan','paymentmode'));
         }
 
 
@@ -317,13 +319,14 @@ class StudentController extends Controller
             $plans=Plan::where(['iStatus'=>1,'isDelete'=>0])->get();
             $batches=Batch::where(['iStatus'=>1,'isDelete'=>0])->get();
             $category=Category::where(['iStatus'=>1,'isDelete'=>0])->get();
+            $paymentmode=PaymentMode::get();
 
             if(!($data))
             {
                 return redirect()->back()->with('error','No Data Found');
             }else
             {
-                return view('admin.student.active_student_edit',compact('data','plans','category','batches'));
+                return view('admin.student.active_student_edit',compact('data','plans','category','batches','paymentmode'));
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
@@ -351,6 +354,19 @@ class StudentController extends Controller
         try
         {
             $this->student->createOrUpdate($request, $id);
+
+
+            /*if ($request->filled('subscription_id')) 
+            {
+
+                $subscription = StudentSubscription::find($request->subscription_id);
+
+                if ($subscription) {
+                    $subscription->payment_date = $request->payment_date ?: null;
+                    $subscription->payment_mode = $request->payment_mode ?: null;
+                    $subscription->save();
+                }
+            }*/
             
             if($request->isPaid == 1)
             {
@@ -368,6 +384,22 @@ class StudentController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+    }
+    public function update_payment(Request $request)
+    {
+       
+        if ($request->filled('subscription_id')) 
+            {
+
+                $subscription = StudentSubscription::find($request->subscription_id);
+
+                if ($subscription) {
+                    $subscription->payment_date = $request->payment_date ?: null;
+                    $subscription->payment_mode = $request->payment_mode ?: null;
+                    $subscription->save();
+                }
+            }
+            return redirect()->back()->with('success','Payment detail updated Successfully');
     }
     /*public function delete(Request $request)
     {   

@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Dashboard'); ?>
 
-@section('title', 'Dashboard')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <!-- ============================================================== -->
     <!-- Start right Content here -->
@@ -36,7 +34,8 @@
                             <!--end row-->
 
                              <div class="row">
-                                <!-- <div class="col-xl-3 col-md-6">
+                                <div class="col-xl-3 col-md-6">
+                                    <!-- card -->
                                     <div class="card card-animate bg-primary">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center">
@@ -49,9 +48,9 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ $newRegistration }}">{{ $newRegistration }}</span>
+                                                            data-target="<?php echo e($newRegistration); ?>"><?php echo e($newRegistration); ?></span>
                                                     </h4>
-                                                    <a href="{{ route('studentinquiry.index') }}"
+                                                    <a href="<?php echo e(route('studentinquiry.index')); ?>"
                                                         class="text-decoration-underline text-white">View
                                                         Student</a>
                                                 </div>
@@ -63,7 +62,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
 
                                 <!-- Batch wise student count -->  
                                 <div class="col-xl-3 col-md-6">
@@ -80,9 +79,9 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ $batchStudent }}">{{ $batchStudent }}</span>
+                                                            data-target="<?php echo e($batchStudent); ?>"><?php echo e($batchStudent); ?></span>
                                                     </h4>
-                                                    <a href="{{ route('attendance.index') }}"
+                                                    <a href="<?php echo e(route('attendance.index')); ?>"
                                                         class="text-decoration-underline text-white">View
                                                         Student</a>
                                                 </div>
@@ -110,9 +109,9 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ $StudentRenewal }}">{{ $StudentRenewal }}</span>
+                                                            data-target="<?php echo e($StudentRenewal); ?>"><?php echo e($StudentRenewal); ?></span>
                                                     </h4>
-                                                    <a href="{{ route('renewPlan.renew_plan') }}"
+                                                    <a href="<?php echo e(route('renewPlan.renew_plan')); ?>"
                                                         class="text-decoration-underline text-white">View
                                                         Renewal Student</a>
                                                 </div>
@@ -140,9 +139,9 @@
                                                 <div>
                                                     <h4 class="fs-22 fw-bold ff-secondary text-white mb-4">
                                                         <span class="counter-value"
-                                                            data-target="{{ $upcomingRenewal->count(); }}">{{ $upcomingRenewal->count(); }}</span>
+                                                            data-target="<?php echo e($upcomingRenewal->count()); ?>"><?php echo e($upcomingRenewal->count()); ?></span>
                                                     </h4>
-                                                    <a href="{{ route('report.upcoming_renew') }}"
+                                                    <a href="<?php echo e(route('report.upcoming_renew')); ?>"
                                                         class="text-decoration-underline text-white">View
                                                        Upcoming Renewal</a>
                                                 </div>
@@ -174,4 +173,6 @@
     <!-- end main content-->
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/labtrade/public_html/kittenart/newkittenart/resources/views/home.blade.php ENDPATH**/ ?>

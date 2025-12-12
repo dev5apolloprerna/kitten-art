@@ -123,6 +123,7 @@ Route::prefix('admin')->name('student.')->middleware('auth')->group(function () 
     Route::post('student/payment-request', [StudentController::class, 'payment_request'])->name('paymentRequest');
     Route::get('student/active-student-view/{id?}', [StudentController::class, 'active_student_view'])->name('active_student_view');
 
+    Route::any('student/update-payment', [StudentController::class,'update_payment'])->name('updatepayment');
 
     Route::any('student/register-student', [StudentController::class,'register_student'])->name('register_student');
     Route::any('student/active-student', [StudentController::class,'active_student'])->name('active_student');
